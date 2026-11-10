@@ -1,10 +1,11 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report
+import joblib 
 
 df = pd.read_csv("./data/processed/bank_churn_clean.csv")
 
@@ -24,13 +25,24 @@ preprocessing = ColumnTransformer([
 
 pipe = Pipeline([
     ("prep", preprocessing),
-    ("model", LogisticRegression(max_iter=1000, class_weight="balanced"))
+    ("model", RandomForestClassifier())
 ])
 
-pipe.fit(X_train, y_train)
+param_grid = {
+    "model__class_weight": ["balanced", None],
+    "model__n_estimators": [100, 300, 500, 1000],
+    "model__max_depth": [3, 5, 10, 15]
+}
 
-y_pred = pipe.predict(X_test)
-y_proba = pipe.predict_proba(X_test)[:, 1]
+grid = GridSearchCV(pipe, param_grid, cv=3, scoring="f1", verbose=2)
 
-print(f1_score(y_test, y_pred))
-print(roc_auc_score(y_test, y_proba))
+grid.fit(X_train, y_train)
+
+print(grid.best_params_)
+print(grid.best_score_)
+print(grid.best_estimator_)
+
+y_pred = grid.best_estimator_.predict(X_test)
+print(classification_report(y_test, y_pred))
+
+joblib.dump(grid.best_estimator_, "./models/model.pkl")
