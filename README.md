@@ -1,4 +1,4 @@
-# Bank Churn Prediction 
+# Bank Churn Prediction
 
 [🇬🇧 English version](README.en.md)
 
@@ -69,6 +69,13 @@ pip install -r requirements.txt
 
 ```bash
 uvicorn src.api:app --reload
+```
+
+**Или через Docker:**
+
+```bash
+docker build -t bank-churn-api .
+docker run -p 8000:8000 bank-churn-api
 ```
 
 Открой `http://127.0.0.1:8000/docs` — Swagger UI. Найди `/predict`, нажми **Try it out**, введи данные клиента, **Execute**.

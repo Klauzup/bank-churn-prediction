@@ -71,6 +71,13 @@ pip install -r requirements.txt
 uvicorn src.api:app --reload
 ```
 
+**Or via Docker:**
+
+```bash
+docker build -t bank-churn-api .
+docker run -p 8000:8000 bank-churn-api
+```
+
 Open `http://127.0.0.1:8000/docs` — Swagger UI. Find `/predict`, click **Try it out**, enter client data, **Execute**.
 
 ## Example request
